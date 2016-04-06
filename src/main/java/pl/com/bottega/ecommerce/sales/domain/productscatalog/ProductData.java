@@ -20,9 +20,10 @@ import java.util.Date;
 
 
 import pl.com.bottega.ecommerce.canonicalmodel.publishedlanguage.Id;
+import pl.com.bottega.ecommerce.sales.domain.invoicing.Taxable;
 import pl.com.bottega.ecommerce.sharedkernel.Money;
 
-public class ProductData {
+public class ProductData implements Taxable {
 	private Id productId;
 	private Money price;
 	

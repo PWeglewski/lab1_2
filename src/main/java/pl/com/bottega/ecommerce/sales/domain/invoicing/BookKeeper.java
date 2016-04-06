@@ -15,11 +15,7 @@
  */
 package pl.com.bottega.ecommerce.sales.domain.invoicing;
 
-import pl.com.bottega.ecommerce.canonicalmodel.publishedlanguage.ClientData;
 import pl.com.bottega.ecommerce.sharedkernel.Money;
-
-import java.math.BigDecimal;
-import java.util.List;
 
 public class BookKeeper {
 
@@ -27,36 +23,14 @@ public class BookKeeper {
 //		Invoice invoice = new Invoice(Id.generate(), client);
         Invoice.InvoiceBuilder invoiceBuilder = new Invoice.InvoiceBuilder(invoiceRequest.getClient());
 
+        TaxFactory taxFactory = new TaxFactory();
+
         for (RequestItem item : invoiceRequest.getItems()) {
             Money net = item.getTotalCost();
-            BigDecimal ratio = null;
-            String desc = null;
-
-            switch (item.getProductData().getType()) {
-                case DRUG:
-                    ratio = BigDecimal.valueOf(0.05);
-                    desc = "5% (D)";
-                    break;
-                case FOOD:
-                    ratio = BigDecimal.valueOf(0.07);
-                    desc = "7% (F)";
-                    break;
-                case STANDARD:
-                    ratio = BigDecimal.valueOf(0.23);
-                    desc = "23%";
-                    break;
-
-                default:
-                    throw new IllegalArgumentException(item.getProductData().getType() + " not handled");
-            }
-
-            Money taxValue = net.multiplyBy(ratio);
-
-            Tax tax = new Tax(taxValue, desc);
-
-
             InvoiceLine invoiceLine = new InvoiceLine(item.getProductData(),
-                    item.getQuantity(), net, tax);
+                    item.getQuantity(),
+                    net,
+                    taxFactory.getTax(net, item.getProductData()));
 //			invoice.addItem(invoiceLine);
             invoiceBuilder.addItem(invoiceLine);
         }
