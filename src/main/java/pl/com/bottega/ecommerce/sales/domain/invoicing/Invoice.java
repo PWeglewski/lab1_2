@@ -39,22 +39,30 @@ public class Invoice  {
 
 	private Id id;
 
-	Invoice(Id invoiceId, ClientData client) {
-		this.id = invoiceId;
-		this.client = client;
-		this.items = new ArrayList<InvoiceLine>();
-		
-		this.net = Money.ZERO;
-		this.gros = Money.ZERO;
-	}
-	
+//	Invoice(Id invoiceId, ClientData client) {
+//		this.id = invoiceId;
+//		this.client = client;
+//		this.items = new ArrayList<InvoiceLine>();
+//
+//		this.net = Money.ZERO;
+//		this.gros = Money.ZERO;
+//	}
 
-	public void addItem(InvoiceLine item) {
-		items.add(item);
-
-		net = net.add(item.getNet());
-		gros = gros.add(item.getGros());
+	public Invoice(InvoiceBuilder invoiceBuilder) {
+		id = invoiceBuilder.id;
+		client = invoiceBuilder.client;
+		net = invoiceBuilder.net;
+		gros = invoiceBuilder.gros;
+		items = invoiceBuilder.items;
 	}
+
+
+//	public void addItem(InvoiceLine item) {
+//		items.add(item);
+//
+//		net = net.add(item.getNet());
+//		gros = gros.add(item.getGros());
+//	}
 
 	/**
 	 * 
@@ -76,4 +84,37 @@ public class Invoice  {
 		return gros;
 	}
 
+	public static class InvoiceBuilder {
+		private final Id id;
+
+		private final ClientData client;
+
+		private Money net;
+
+		private Money gros;
+
+		private List<InvoiceLine> items;
+
+		public InvoiceBuilder(ClientData clientData) {
+			client = clientData;
+			id = Id.generate();
+			net = Money.ZERO;
+			gros = Money.ZERO;
+			items = new ArrayList<InvoiceLine>();
+		}
+
+		public InvoiceBuilder addItem(InvoiceLine item) {
+			items.add(item);
+
+			net = net.add(item.getNet());
+			gros = gros.add(item.getGros());
+
+			return this;
+		}
+
+		public Invoice build(){
+			return new Invoice(this);
+		}
+
+	}
 }
