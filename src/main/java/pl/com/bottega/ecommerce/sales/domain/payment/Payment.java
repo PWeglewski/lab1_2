@@ -21,22 +21,45 @@ import pl.com.bottega.ecommerce.sharedkernel.Money;
 
 public class Payment {
 
-	private ClientData clientData;
+    private ClientData clientData;
 
-	private Money amount;
+    private Money amount;
 
-	private Id aggregateId;
+    private Id aggregateId;
 
 
-	public Payment(Id aggregateId, ClientData clientData, Money amount) {
-		this.aggregateId = aggregateId;
-		this.clientData = clientData;
-		this.amount = amount;
-	}
+//	public Payment(Id aggregateId, ClientData clientData, Money amount) {
+//		this.aggregateId = aggregateId;
+//		this.clientData = clientData;
+//		this.amount = amount;
+//	}
 
-	public Payment rollBack() {
-		Id id = Id.generate();
+    public Payment(PaymentBuilder paymentBuilder) {
+        this.aggregateId = paymentBuilder.aggregateId;
+        this.clientData = paymentBuilder.clientData;
+        this.amount = paymentBuilder.amount;
+    }
 
-		return new Payment(id, clientData, amount.multiplyBy(-1));		
-	}
+    public Payment rollBack() {
+        Id id = Id.generate();
+
+        return new Payment.PaymentBuilder(id, clientData, amount.multiplyBy(-1))
+                .build();
+    }
+
+    public static class PaymentBuilder {
+        private final ClientData clientData;
+        private final Money amount;
+        private final Id aggregateId;
+
+        public PaymentBuilder(Id aggregateId, ClientData clientData, Money money) {
+            this.clientData = clientData;
+            this.amount = money;
+            this.aggregateId = aggregateId;
+        }
+
+        public Payment build() {
+            return new Payment(this);
+        }
+    }
 }
