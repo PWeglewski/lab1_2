@@ -26,8 +26,4 @@ public class InvoiceRequest {
 	public Collection<RequestItem> getItems() {
 		return Collections.unmodifiableCollection(items);
 	}
-
-//	public ClientData getClientData() {
-//		return client;
-//	}
 }
